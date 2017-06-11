@@ -1,21 +1,19 @@
 .PHONY: all
 
 all: lib
-	@ gcc -I./ -o pyrin_test *.c
+	@ gcc -I./ -o pyrin *.c
 
 obj:
-	@ gcc -fPIC -c -I./ -o libpyrin.o pyrin.c
+	@ gcc -fPIC -c -I./ strops.c pyrin.c
 
 lib: obj
-	@ gcc -shared -o libpyrin.so libpyrin.o
+	@ gcc -shared -o libpyrin.so pyrin.o strops.o
 
-test-lib:
-	#@ export LD_LIBRARY_PATH=$(PWD):$LD_LIBRARY_PATH
-	@ gcc -L$(PWD) -I./ -o test_lib main.c $(PWD)/libpyrin.so
+test-lib: lib
+	@ gcc -L$(PWD) -I./ -o test-lib main.c $(PWD)/libpyrin.so
 
 run:
-	@ ./pyrin_test
+	@ ./pyrin
 
 clean:
-	@ rm pyrin_test test_lib 2> /dev/null
-	@ rm *.o *.so 2> /dev/null
+	@ rm pyrin test-lib *.o *.so 2> /dev/null

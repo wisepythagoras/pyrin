@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <pyrin.h>
+#include <strops.h>
 
 char *convertToNumberingScheme(int number) {
     uint8_t baseChar = 'a';
