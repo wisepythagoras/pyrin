@@ -7,6 +7,32 @@
 char *all_chars = "0123456789abcdef";
 
 /**
+ * Reverses a string.
+ * @param string The string to inverse.
+ */
+void reverse(char *string) {
+    int length, c;
+    char *begin, *end, temp;
+ 
+    length = strlen(string);
+    begin = string;
+    end = string;
+ 
+    for (c = 0; c < length - 1; c++) {
+        end++;
+    }
+ 
+    for (c = 0; c < length / 2; c++) {
+        temp = *end;
+        *end = *begin;
+        *begin = temp;
+ 
+        begin++;
+        end--;
+    }
+}
+
+/**
  * Returns a number in a different base, between 2 and 16.
  *
  * @param val The input decimal number.
@@ -34,6 +60,9 @@ char *ltostr(uint64_t val, unsigned base) {
         // string.
         result[i++] = all_chars[val % base];
     } while((uint64_t)(val /= base) > 0);
+
+    // Reverse the string.
+    reverse(result);
 
     // Terminate the stirng.
     result[i] = '\0';

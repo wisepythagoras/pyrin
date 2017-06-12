@@ -27,7 +27,7 @@ int ceil(float x) {
  * Initializes the a random number generator.
  * @param seed The seed to start off the PRNG.
  */
-void ps_rand(char *seed) {
+void p_rand_init(char *seed) {
     seed_next = seed;
 }
 
@@ -95,14 +95,14 @@ uint8_t *pyrin(char *input) {
     int len = strlen(input);
 
     // Initialize the PRNG.
-    ps_rand(input);
+    p_rand_init(input);
 
     uint8_t part_a[64];
     uint8_t *result = malloc(64 * sizeof(char));
 
     // Generate a random string.
     for (int i = 0; i < 64; i++) {
-        part_a[i] = p_rand() % 55291;
+        part_a[i] = p_rand() % 255;
     }
 
     if (len <= 64) {
@@ -112,7 +112,7 @@ uint8_t *pyrin(char *input) {
                 result[i] = part_a[i] ^ input[i];
             }
             else {
-                result[i] = part_a[i] ^ (p_rand() % 55291);
+                result[i] = part_a[i] ^ (p_rand() % 255);
             }
         }
     }
