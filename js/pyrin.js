@@ -140,3 +140,7 @@ class PRand {
         return hash;
     }
 }
+
+if (module) {
+    module.exports = pyrin;
+}
