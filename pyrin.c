@@ -6,14 +6,13 @@
 #include <strops.h>
 
 static uint64_t random_number;
-static char *seed_next;
 
 /**
  * A simple ceiling function.
  * @param x The number to get the ceiling of.
  * @return The next largest integer after x.
  */
-int ceil(float x) {
+double ceil(double x) {
     int num = (int)x;
 
     if(num == x) {
@@ -27,8 +26,9 @@ int ceil(float x) {
  * Initializes the a random number generator.
  * @param seed The seed to start off the PRNG.
  */
-void p_rand_init(char *seed) {
-    seed_next = seed;
+void p_rand_init(PyrinContext *context, char *seed) {
+    // Set the context.
+    context->seed = seed;
 }
 
 /**
@@ -36,12 +36,12 @@ void p_rand_init(char *seed) {
  * @param seed The seed to start off the PRNG.
  * @return The random number.
  */
-uint64_t p_rand() {
+uint64_t p_rand(PyrinContext *context) {
     // Get the micro hash (aka the random number) of the seed.
-    random_number = m_djb_hash(seed_next);
+    random_number = m_djb_hash(context->seed);
 
     // Turn the random number into a hexadecimal string.
-    seed_next = ltostr(random_number, 16);
+    context->seed = ltostr(random_number, 16);
 
     // Return the random number.
     return random_number;
@@ -94,44 +94,65 @@ uint8_t *pyrin(char *input) {
     // Get the length of the input string.
     int len = strlen(input);
 
-    // Initialize the PRNG.
-    p_rand_init(input);
+    // Create the context of the Pyrin hashing.
+    PyrinContext context;
+
+    // Initialize the PRNG and set the input string as the
+    // seed on the newly created context (above).
+    p_rand_init(&context, input);
 
     uint8_t part_a[64];
+
+    // Allocate presicely 64 characters (512 bits) to the result
+    // string.
     uint8_t *result = malloc(64 * sizeof(char));
 
     // Generate a random string.
     for (int i = 0; i < 64; i++) {
-        part_a[i] = p_rand() % 255;
+        // So, we use the p_rand function to generate 64 random
+        // characters to fill up the nonce word array with.
+        part_a[i] = p_rand(&context) % 255;
     }
 
     if (len <= 64) {
         // Fill up the string to make it into an even 64 bytes.
         for (int i = 0; i < 64; i++) {
             if (i < len) {
+                // While there's still enough characters in the
+                // input, XOR those with the nonce character.
                 result[i] = part_a[i] ^ input[i];
             }
             else {
-                result[i] = part_a[i] ^ (p_rand() % 255);
+                // Otherwise create some padding with more random
+                // characters.
+                result[i] = part_a[i] ^ (p_rand(&context) % 255);
             }
         }
     }
     else {
         // Get the amount of parts.
-        int parts = ceil((double)len / 64);
+        int parts = (int)ceil((double)len / 64);
 
+        // We'll have to break the input string into blocks of 64
+        // characters and process them all separately.
         for(int i = 0; i < parts; i++) {
-            char *block = malloc(64 * sizeof(char) + 1);
             int block_length = 64;
 
             if(i == parts - 1) {
+                // If the function is processing the last block of
+                // the input we want to ensure that the length is
+                // correct and not by default 64 bytes. It will, most
+                // likely, be less than 64 characters.
                 block_length = len - (i * 64);
             }
+
+            // Allocate a string to put the next block in.
+            char *block = (char *)malloc(block_length * sizeof(char) + 1);
 
             // Get the block and save it in the block variable.
             strncpy(block, input + (i * 64), block_length);
 
-            // Get the block's hash.
+            // Process the individual block to get its hash.
             block = pyrin(block);
 
             // XOR the block's hash with the result.
@@ -141,5 +162,6 @@ uint8_t *pyrin(char *input) {
         }
     }
 
+    // Return the processed result.
     return result;
 }

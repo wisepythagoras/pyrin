@@ -20,28 +20,27 @@ function pyrin(input) {
     if(input.length <= 64) {
         // Fill up the string to make it into an even 64 bytes.
         for (let i = 0; i < 64; i++) {
+            let charCode;
+
             if (i < input.length) {
-                result[i] = part_a[i] ^ input.charCodeAt(i);
+                charCode = part_a[i] ^ input.charCodeAt(i);
+                result.push(charCode);
             }
             else {
-                result[i] = part_a[i] ^ (rand.rand() % 255);
+                charCode = part_a[i] ^ (rand.rand() % 255);
+                result.push(charCode);
             }
         }
+
+        return result;
     }
     else {
         // Get the amount of parts.
         let parts = Math.ceil(input.length / 64);
 
         for (let i = 0; i < parts; i++) {
-            let block = "";
-            let block_length = 64;
-
-            if (i == parts - 1) {
-                block_length = input.length - (i * 64);
-            }
-
             // Get the block and save it in the block variable.
-            block = input.substr(i * 64, (i + 1) * 64);
+            let block = input.substring(i * 64, (i + 1) * 64);
 
             // Get the block's hash.
             block = pyrin(block);
@@ -53,23 +52,35 @@ function pyrin(input) {
         }
     }
 
-    // Convert the hash's int values to hex.
-    for (let i = 0; i < result.length; i++) {
-        result[i] = rand.ltostr(result[i]);
+    rand = undefined;
 
-        if (result[i].length == 1) {
-            result[i] = "0" + result[i];
+    // Return the string.
+    return result;
+}
+
+/**
+ * Convert the int array into a array of hex values.
+ * @param {Array} str The int array to convert.
+ */
+function toHex(str) {
+    let rand = new PRand();
+
+    // Convert the hash's int values to hex.
+    for (let i = 0; i < str.length; i++) {
+        str[i] = rand.ltostr(str[i]);
+
+        if (str[i].length == 1) {
+            str[i] = "0" + str[i];
         }
     }
 
-    // Return the string.
-    return result.join('');
+    return str.join('');
 }
 
 class PRand {
     /**
      * The pseudo-random number generator based on the DJB2 function.
-     * @param {String} seed 
+     * @param {String} seed
      */
     constructor(seed) {
         this.seed = seed;
@@ -143,4 +154,5 @@ class PRand {
 
 if (module) {
     module.exports = pyrin;
+    module.exports.toHex = toHex;
 }

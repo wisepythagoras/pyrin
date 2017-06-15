@@ -53,3 +53,5 @@ dkms.conf
 
 pyrin
 test-lib
+.vscode-upload.json
+.vscode

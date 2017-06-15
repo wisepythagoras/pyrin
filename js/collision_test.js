@@ -20,7 +20,7 @@ let a = pyrin("a");
 
 console.log("Trying to find:\n  ", a);
 
-for (let i = 2; ; i++) {
+for (let i = 258301772; ; i++) {
     // Get a string.
     let word = convertToNumberingScheme(i);
 
@@ -30,5 +30,9 @@ for (let i = 2; ; i++) {
     // Does it match the hash of 'a'?
     if (hash == a) {
         console.log('Attempts:', i, word);
+        break;
+    }
+    else {
+        console.log(word, hash, i);
     }
 }
