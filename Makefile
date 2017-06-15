@@ -17,3 +17,6 @@ run:
 
 clean:
 	@ rm pyrin test-lib *.o *.so 2> /dev/null
+
+test: all
+	@ ./pyrin | grep "$(node js/test_all.js)" | wc -l
