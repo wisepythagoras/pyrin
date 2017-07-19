@@ -117,6 +117,7 @@ class PRand {
 
     /**
      * The DJB2 function, remastered.
+     * here: http://www.cse.yorku.ca/~oz/hash.html
      * @param {String} input The string to hash.
      * @return {int}
      */
@@ -124,8 +125,8 @@ class PRand {
         // Get the length of the input string.
         let len = input.length;
 
-        // Initialize the hash value to 0.
-        let hash = 0;
+        // Initialize the hash value to 5381.
+        let hash = 5381;
 
         // Return 0 if a 0 length string was passed.
         if (!len) {
@@ -152,7 +153,7 @@ class PRand {
     }
 }
 
-if (module) {
+if (typeof module != "undefined") {
     module.exports = pyrin;
     module.exports.toHex = toHex;
 }

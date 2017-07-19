@@ -48,7 +48,8 @@ uint64_t p_rand(PyrinContext *context) {
 }
 
 /**
- * Creates a temporary hash of a string.
+ * Creates a temporary hash of a string. More information on DJB2 is
+ * here: http://www.cse.yorku.ca/~oz/hash.html
  *
  * @param input The input string.
  * @return The hash value as an unsigned long integer.
@@ -57,8 +58,8 @@ uint64_t m_djb_hash(char *input) {
     // Get the length of the input string.
     int len = strlen(input);
 
-    // Initialize the hash value to 0.
-    uint64_t hash = 0;
+    // Initialize the hash value to 5381.
+    uint64_t hash = 5381;
 
     // Return 0 if a 0 length string was passed.
     if (!len) {
