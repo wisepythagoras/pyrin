@@ -1,5 +1,6 @@
 // Include the pyrin library.
 const pyrin = require("./pyrin");
+const toHex = pyrin.toHex;
 
 function convertToNumberingScheme(number) {
     let baseChar = 'a';
@@ -16,23 +17,36 @@ function convertToNumberingScheme(number) {
 }
 
 // Get the hash of the letter a.
-let a = pyrin("a");
+let a = toHex(pyrin("a"));
 
 console.log("Trying to find:\n  ", a);
 
-for (let i = 258301772; ; i++) {
+var i = 23949118;
+
+/**
+ * Compute the hash corresponding to an int.
+ */
+function computeNextHash() {
     // Get a string.
     let word = convertToNumberingScheme(i);
 
     // Get the hash of the incremented string.
-    let hash = pyrin(word);
+    let hash = toHex(pyrin(word));
 
     // Does it match the hash of 'a'?
     if (hash == a) {
         console.log('Attempts:', i, word);
-        break;
+        return;
     }
     else {
         console.log(word, hash, i);
     }
+
+    i++;
+
+    // Wait for the next tick and re-run the function.
+    setImmediate(computeNextHash);
 }
+
+// Start computing hashes to try and match the hash of 'a'.
+computeNextHash();
