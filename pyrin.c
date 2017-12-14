@@ -115,6 +115,9 @@ uint8_t *pyrin(char *input) {
         part_a[i] = p_rand(&context) % 255;
     }
 
+    // Also, rotate the resulting sequence.
+    left_rotate(part_a, p_rand(&context) % 64);
+
     if (len <= 64) {
         // Fill up the string to make it into an even 64 bytes.
         for (int i = 0; i < 64; i++) {
@@ -128,6 +131,8 @@ uint8_t *pyrin(char *input) {
                 // characters.
                 result[i] = part_a[i] ^ (p_rand(&context) % 255);
             }
+
+            result[i] = ((result[i] & p_rand(&context) % 255) ^ p_rand(&context) % 255);
         }
     }
     else {
@@ -154,12 +159,14 @@ uint8_t *pyrin(char *input) {
             strncpy(block, input + (i * 64), block_length);
 
             // Process the individual block to get its hash.
-            block = pyrin(block);
+            block = (char *) pyrin(block);
 
             // XOR the block's hash with the result.
             for (int j = 0; j < 64; j++) {
                 result[j] = part_a[j] ^ block[j];
             }
+
+            result[i] = ((result[i] & p_rand(&context) % 255) ^ p_rand(&context) % 255);
         }
     }
 
