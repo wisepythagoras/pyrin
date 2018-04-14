@@ -17,9 +17,6 @@ function pyrin(input) {
         part_a.push(rand.rand() % 255);
     }
 
-    // Also, rotate the resulting sequence.
-    part_a = rotateLeft(part_a, rand.rand() % 64);
-
     if (input.length <= 64) {
         // Fill up the string to make it into an even 64 bytes.
         for (let i = 0; i < 64; i++) {
@@ -80,20 +77,6 @@ function toHex(str) {
     }
 
     return str.join('');
-}
-
-/**
- * Rotate a string to the left by n.
- * @param {int[]} uint8Array The string to rotate.
- * @param {*} n The amount of times to rotate a string.
- * @returns {int[]} The rotated uint8 array.
- */
-function rotateLeft(uint8Array, n) {
-    // Rotate the uint8 array.
-    for (; n > 0; uint8Array.push(uint8Array.shift()), n--);
-
-    // Return the rotated uint8 array.
-    return uint8Array;
 }
 
 class PRand {

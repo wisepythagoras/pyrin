@@ -115,9 +115,6 @@ uint8_t *pyrin(char *input) {
         part_a[i] = p_rand(&context) % 255;
     }
 
-    // Also, rotate the resulting sequence.
-    left_rotate(part_a, p_rand(&context) % 64);
-
     if (len <= 64) {
         // Fill up the string to make it into an even 64 bytes.
         for (int i = 0; i < 64; i++) {

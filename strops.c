@@ -48,21 +48,6 @@ void reverse_alt(uint8_t *str, int len) {
 }
 
 /**
- * Rotate a string left.
- * @param char* str The string to rotate.
- * @param int n The amount of characters to rotate.
- */
-void left_rotate(uint8_t *str, int n) {
-    // Ensure that the amount is within the bounds of the string.
-    n = n % 64;
-
-    // Start reversing the string.
-    reverse_alt(str, n);
-    reverse_alt(str + n, 64 - n);
-    reverse_alt(str, 64);
-}
-
-/**
  * Returns a number in a different base, between 2 and 16.
  *
  * @param val The input decimal number.
