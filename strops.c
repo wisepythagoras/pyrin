@@ -1,3 +1,4 @@
+#include <pyrin.h>
 #include <strops.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -5,6 +6,31 @@
 #include <string.h>
 
 char *all_chars = "0123456789abcdef";
+
+void swap(uint8_t *t, int from, int to)
+{
+    if (from >= LEN || to >= LEN || from < 0 || to < 0) {
+        return;
+    }
+
+    uint8_t temp = t[from];
+    t[from] = t[to];
+    t[to] = temp;
+}
+
+void shuffle(uint8_t *t, int interval)
+{
+    for (int i = 0; i < LEN; i += interval) {
+        for (int j = i; j < interval; j++) {
+            int forward = (interval + j) % LEN;
+
+            t[j] += t[(forward + 1) % LEN];
+            t[j] ^= t[forward];
+            t[j] %= 255;
+            swap(t, j, forward);
+        }
+    }
+}
 
 /**
  * Reverses a string.
@@ -95,7 +121,7 @@ char *ltostr(uint64_t val, unsigned base) {
 uint8_t *to_hex(uint8_t *input) {
     uint8_t *buffer = malloc(128 * sizeof(char) + 1);
 
-    for (int i = 0, j = 0; i < 64; i++, j += 2) {
+    for (int i = 0, j = 0; i < LEN; i++, j += 2) {
         char *hex = dechex(input[i], NULL, 0, 1);
         // printf("%i: %s\n", input[i], hex);
         buffer[j] = hex[0];

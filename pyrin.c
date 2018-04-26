@@ -102,22 +102,22 @@ uint8_t *pyrin(char *input) {
     // seed on the newly created context (above).
     p_rand_init(&context, input);
 
-    uint8_t part_a[64];
+    uint8_t part_a[LEN];
 
     // Allocate presicely 64 characters (512 bits) to the result
     // string.
-    uint8_t *result = malloc(64 * sizeof(char));
+    uint8_t *result = malloc(LEN * sizeof(char));
 
     // Generate a random string.
-    for (int i = 0; i < 64; i++) {
+    for (int i = 0; i < LEN; i++) {
         // So, we use the p_rand function to generate 64 random
         // characters to fill up the nonce word array with.
         part_a[i] = p_rand(&context) % 255;
     }
 
-    if (len <= 64) {
+    if (len <= LEN) {
         // Fill up the string to make it into an even 64 bytes.
-        for (int i = 0; i < 64; i++) {
+        for (int i = 0; i < LEN; i++) {
             if (i < len) {
                 // While there's still enough characters in the
                 // input, XOR those with the nonce character.
@@ -131,40 +131,47 @@ uint8_t *pyrin(char *input) {
 
             result[i] = ((result[i] & p_rand(&context) % 255) ^ p_rand(&context) % 255);
         }
+        shuffle(result, 3);
     }
     else {
         // Get the amount of parts.
-        int parts = (int)ceil((double)len / 64);
+        int parts = (int)ceil((double)len / LEN);
 
         // We'll have to break the input string into blocks of 64
         // characters and process them all separately.
         for(int i = 0; i < parts; i++) {
-            int block_length = 64;
+            int block_length = LEN;
 
             if(i == parts - 1) {
                 // If the function is processing the last block of
                 // the input we want to ensure that the length is
                 // correct and not by default 64 bytes. It will, most
                 // likely, be less than 64 characters.
-                block_length = len - (i * 64);
+                block_length = len - (i * LEN);
             }
 
             // Allocate a string to put the next block in.
             char *block = (char *)malloc(block_length * sizeof(char) + 1);
 
             // Get the block and save it in the block variable.
-            strncpy(block, input + (i * 64), block_length);
+            strncpy(block, input + (i * LEN), block_length);
 
             // Process the individual block to get its hash.
             block = (char *) pyrin(block);
 
             // XOR the block's hash with the result.
-            for (int j = 0; j < 64; j++) {
+            for (int j = 0; j < LEN; j++) {
                 result[j] = part_a[j] ^ block[j];
             }
 
             result[i] = ((result[i] & p_rand(&context) % 255) ^ p_rand(&context) % 255);
+            shuffle(result, 3);
         }
+    }
+
+    // Add a final round.
+    for(int i = 2; i < 6; i++) {
+        // shuffle(result, i);
     }
 
     // Return the processed result.

@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#define LEN 64
+
 typedef struct {
     char *seed;
 } PyrinContext;
