@@ -60,6 +60,8 @@ uint64_t m_djb_hash(char *input) {
 
     // Initialize the hash value to 5381.
     uint64_t hash = 5381;
+    uint64_t lcg = hash << 7;
+    uint64_t other_hash = hash >> 19;
 
     // Return 0 if a 0 length string was passed.
     if (!len) {
@@ -79,6 +81,15 @@ uint64_t m_djb_hash(char *input) {
         // Avoid having negative values by converting it into a 31-bit
         // integer.
         hash = hash & 0x7fffffff;
+
+        const uint64_t plcg = lcg;
+        const uint64_t mx = hash * (lcg - ~lcg);
+        const uint64_t rs = mx >> 32 | mx << 32;
+
+        lcg += ~mx;
+        hash += rs;
+        hash = other_hash ^ plcg;
+        hash = hash ^ lcg ^ rs;
     }
 
     // Return the actual hash.
